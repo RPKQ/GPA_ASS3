@@ -16,6 +16,7 @@ Shader::Shader(GLenum shaderType, const char* filePath)
 	if (!success) {
 		GLchar InfoLog[1024];
 		glGetShaderInfoLog(this->ID, 1024, NULL, InfoLog);
+		fprintf(stderr, "<%s>:\n", filePath);
 		fprintf(stderr, "Error compiling shader type %d: '%s'\n", this->ID, InfoLog);
 		system("pause");
 	}

@@ -27,7 +27,7 @@ public:
 	void setMat2(const std::string &name, const glm::mat2 &mat) const;
 	void setMat3(const std::string &name, const glm::mat3 &mat) const;
 	void setMat4(const std::string &name, const glm::mat4 &mat) const;
-	void setTexture(const std::string &name, GLuint textureID, int bindingPoint);
+	void setTexture(GLuint textureID);
 
 private:
 	GLuint ID;
