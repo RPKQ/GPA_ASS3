@@ -11,7 +11,7 @@ uniform sampler2D tex;
 
 void main()
 {
-    const float threshold = 0.1f;
+    const float threshold = 0.9f;
 	const float offScale = 0.002f;
 	const vec2 offsets[9] =
 	{
@@ -30,7 +30,6 @@ void main()
 	vec4 sum = vec4(0.0f);
 	for(int i=0; i<9; i++)
 		sum += texture(tex, vertexData.texCoord + offsets[i]) * mFilter[i];
-	sum /= 9.0f;
 
 	vec4 black = vec4(0.0, 0.0, 0.0, 1.0);
 	vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
