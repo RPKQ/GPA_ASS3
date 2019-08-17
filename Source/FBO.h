@@ -1,22 +1,20 @@
-#ifndef GPA_ASS2_FILTER_H
-#define GPA_ASS2_FILTER_H
+#ifndef GPA_ASS2_FBO_H
+#define GPA_ASS2_FBO_H
 #include "../Source/GLIncludes.h"
 #include "Program.h"
 
-class Filter
+class FBO
 {
 public:
-	Filter();
-	~Filter();
+	FBO();
+	~FBO();
 	void reshape(int width, int height);
 	GLuint getID() const;
-	void draw() const;
+	GLuint getOuputTex() const;
 
 private:
 	GLuint FBO_ID;
 	GLuint RBO, FBO_tex;
-	GLuint vaoWindow;
-	GLuint window_buffer;
 };
 #endif
 
