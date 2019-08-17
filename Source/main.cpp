@@ -10,7 +10,7 @@ using namespace glm;
 using namespace std;
 
 enum { MENU_TIMER_START, MENU_TIMER_STOP, MENU_EXIT, 
-	MENU_SHADER_NORMAL, MENU_SHADER_LIGHTING, MENU_SHADER_TEXTURE,
+	MENU_SHADER_LAPLACIAN, MENU_SHADER_REDBLUE, MENU_SHADER_SINWAVE,
 	MENU_SCENE_SPONZA, MENU_SCENE_EMPIRE};
 
 
@@ -21,10 +21,7 @@ glm::mat4 modelMat;
 glm::mat4 perspectMat;
 
 // first program
-Program* programNormal;
-Program* programTexture;
-Program* programLight;
-Program* program;
+Program* programOrigin;
 
 // post processing
 WindowModel *winModel, *winModel2;
@@ -58,11 +55,11 @@ void DisplayFunc()
 	glClearBufferfv(GL_COLOR, 0, white);
 	glClearBufferfv(GL_DEPTH, 0, &one);
 	
-	program->use();
-	program->setMat4("pvMat", perspectMat * cam->getViewMat());
-	program->setMat4("modelMat", glm::mat4(1.0));
-	program->setVec3("lightPos", glm::vec3(100000.0, 100000.0, 200000.0));
-	program->setBool("useTex", true);
+	programOrigin->use();
+	programOrigin->setMat4("pvMat", perspectMat * cam->getViewMat());
+	programOrigin->setMat4("modelMat", glm::mat4(1.0));
+	programOrigin->setVec3("lightPos", glm::vec3(100000.0, 100000.0, 200000.0));
+	programOrigin->setBool("useTex", true);
 
 	model->draw();
 
@@ -190,15 +187,6 @@ void MenuFunc(int id)
 	case MENU_EXIT:
 		exit(0);
 		break;
-	case MENU_SHADER_NORMAL:
-		program = programNormal;
-		break;
-	case MENU_SHADER_TEXTURE:
-		program = programTexture;
-		break;
-	case MENU_SHADER_LIGHTING:
-		program = programLight;
-		break;
 	case MENU_SCENE_SPONZA:
 		model = model_sponza;
 		cam->setMoveSpeed(5.0);
@@ -206,6 +194,12 @@ void MenuFunc(int id)
 	case MENU_SCENE_EMPIRE:
 		model = model_lostEmpire;
 		cam->setMoveSpeed(1.0);
+		break;
+	case MENU_SHADER_LAPLACIAN:
+		break;
+	case MENU_SHADER_REDBLUE:
+		break;
+	case MENU_SHADER_SINWAVE:
 		break;
 	default:
 		break;
@@ -230,9 +224,9 @@ void InitMenu()
 	glutAddMenuEntry("Stop", MENU_TIMER_STOP);
 
 	glutSetMenu(menu_shader);
-	glutAddMenuEntry("normal", MENU_SHADER_NORMAL);
-	glutAddMenuEntry("texture", MENU_SHADER_TEXTURE);
-	glutAddMenuEntry("lighting", MENU_SHADER_LIGHTING);
+	glutAddMenuEntry("laplacian", MENU_SHADER_LAPLACIAN);
+	glutAddMenuEntry("red-blue", MENU_SHADER_REDBLUE);
+	glutAddMenuEntry("sin wave", MENU_SHADER_SINWAVE);
 
 	glutSetMenu(menu_scene);
 	glutAddMenuEntry("lost empire", MENU_SCENE_EMPIRE);
@@ -248,10 +242,7 @@ void InitObjects()
 	cam = new Camera(vec3(0.0f, 15.0f, 20.0f), vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 	// setup program
-	programTexture = new Program("Shaders/model.vs.glsl", "Shaders/textured.fs.glsl");
-	//programLight = new Program("Shaders/vs.vs.glsl", "Shaders/light.fs.glsl");
-	//programNormal = new Program("Shaders/vs.vs.glsl", "Shaders/normal.fs.glsl");
-	program = programTexture;
+	programOrigin = new Program("Shaders/model.vs.glsl", "Shaders/textured.fs.glsl");
 
 	// post processing
 	winModel = new WindowModel();
