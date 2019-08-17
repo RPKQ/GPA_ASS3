@@ -7,13 +7,14 @@ in VertexData
 
 out vec4 fragColor;
 
+uniform float splitPoint;
 uniform sampler2D texOrigin;
 uniform sampler2D texFiltered;
 
 void main()
 {
 	const vec4 red = vec4(1.0, 0.0, 0.0, 1.0);
-	if(gl_FragCoord.x > 500)
+	if(gl_FragCoord.x > splitPoint)
 	{
 		fragColor = texture(texOrigin, vertexData.texCoord);
 	}

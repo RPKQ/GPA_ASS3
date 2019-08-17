@@ -13,7 +13,7 @@ enum { MENU_TIMER_START, MENU_TIMER_STOP, MENU_EXIT,
 	MENU_SCENE_SPONZA, MENU_SCENE_EMPIRE};
 
 
-const int windowW = 1024, windowH = 768;
+int windowW = 1024, windowH = 768;
 
 // matrices
 glm::mat4 modelMat;
@@ -83,14 +83,7 @@ void DisplayFunc()
 	programComparison->use();
 	programComparison->setTexture("texOrigin", FBOOrigin->getOuputTex(), (GLint)1);
 	programComparison->setTexture("texFiltered", FBOFiltered->getOuputTex(), (GLint)0);
-	//programComparison->setTexture("texOrigin", FBOOrigin->getOuputTex(), (GLint)1);
-	//programComparison->setTexture("texFiltered", FBOFiltered->getOuputTex(), 1);
-
-	/*GLuint texLoc = glGetUniformLocation(programComparison->getID(), "texOrigin");
-	glUniform1i(texLoc, 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, FBOOrigin->getOuputTex());*/
-
+	programComparison->setFloat("splitPoint", windowW / 2);
 	winModel->draw();
 
 	glutSwapBuffers();
@@ -154,6 +147,9 @@ void ReshapeFunc(int width, int height)
 
 	FBOOrigin->reshape(width, height);
 	FBOFiltered->reshape(width, height);
+
+	windowH = height;
+	windowW = width;
 }
 
 void InitCallbackFuncs() 
@@ -241,7 +237,7 @@ void InitObjects()
 	cam = new Camera(vec3(0.0f, 15.0f, 20.0f), vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 	// setup program
-	programTexture = new Program("model.vs.glsl", "textured.fs.glsl");
+	programTexture = new Program("Shaders/model.vs.glsl", "Shaders/textured.fs.glsl");
 	//programLight = new Program("vs.vs.glsl", "light.fs.glsl");
 	//programNormal = new Program("vs.vs.glsl", "normal.fs.glsl");
 	program = programTexture;
@@ -250,16 +246,16 @@ void InitObjects()
 	winModel = new WindowModel();
 
 	//// Filter
-	programFilter = new Program("window.vs.glsl", "sinWave.fs2.glsl");
+	programFilter = new Program("Shaders/window.vs.glsl", "Shaders/sinWave.fs2.glsl");
 	FBOOrigin = new FBO();
 	//// Comparison
-	programComparison = new Program("window.vs.glsl", "comparison.fs3.glsl");
+	programComparison = new Program("Shaders/window.vs.glsl", "Shaders/comparison.fs3.glsl");
 	FBOFiltered = new FBO();
 
 
 	// load models
-	//model_sponza = new AssimpModel("sponza.obj");
-	model_lostEmpire = new AssimpModel("lost_empire.obj");
+	//model_sponza = new AssimpModel("Models/sponza.obj");
+	model_lostEmpire = new AssimpModel("Models/lost_empire.obj");
 	model = model_lostEmpire;
 
 }
