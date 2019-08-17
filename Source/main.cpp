@@ -15,31 +15,36 @@ enum { MENU_TIMER_START, MENU_TIMER_STOP, MENU_EXIT,
 
 const int windowW = 1024, windowH = 768;
 
+// matrices
 glm::mat4 modelMat;
 glm::mat4 perspectMat;
 
+// first program
 Program* programNormal;
 Program* programTexture;
 Program* programLight;
 Program* program;
 
-Program* filterProgram;
-FBO* filterFBO;
-WindowModel* winModel;
+// post processing
+WindowModel *winModel, *winModel2;
+Program *programFilter, *programComparison;
+FBO *FBOOrigin, *FBOFiltered;
 
+// assimp models
 AssimpModel* model;
 AssimpModel* model_sponza;
 AssimpModel* model_lostEmpire;
 Camera* cam;
 
+// timer function??
 GLubyte timer_cnt = 0;
 bool timer_enabled = true;
 unsigned int timer_speed = 16;
 
 void DisplayFunc()
 {
-	// Draw a texture to FBO
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, filterFBO->getID());
+	// Draw a texture to FBOOrigin
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBOOrigin->getID());
 	glDrawBuffer(GL_COLOR_ATTACHMENT0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -57,17 +62,39 @@ void DisplayFunc()
 	model->draw();
 
 
-	// Apply the texture to screen
+	// Filter
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBOFiltered->getID());
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearBufferfv(GL_COLOR, 0, white);
+	glClearBufferfv(GL_DEPTH, 0, &one);
+
+	programFilter->use();
+	programFilter->setFloat("time", glutGet(GLUT_ELAPSED_TIME));
+	programFilter->setTexture("tex", FBOOrigin->getOuputTex(), (GLint)1);
+	winModel->draw();
+
+
+	// Comparison
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	
+	programComparison->use();
+	programComparison->setTexture("texOrigin", FBOOrigin->getOuputTex(), (GLint)1);
+	programComparison->setTexture("texFiltered", FBOFiltered->getOuputTex(), (GLint)0);
+	//programComparison->setTexture("texOrigin", FBOOrigin->getOuputTex(), (GLint)1);
+	//programComparison->setTexture("texFiltered", FBOFiltered->getOuputTex(), 1);
 
-	filterProgram->use();
-	filterProgram->setFloat("time", glutGet(GLUT_ELAPSED_TIME));
-	filterProgram->setTexture("tex", filterFBO->getOuputTex(), 1);
+	/*GLuint texLoc = glGetUniformLocation(programComparison->getID(), "texOrigin");
+	glUniform1i(texLoc, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, FBOOrigin->getOuputTex());*/
+
 	winModel->draw();
 
 	glutSwapBuffers();
+	glGetError();
 }
 
 void KeyboardFunc(unsigned char key, int x, int y)
@@ -125,7 +152,8 @@ void ReshapeFunc(int width, int height)
 	float viewportAspect = (float)width / (float)height;
 	perspectMat = glm::perspective(glm::radians(60.0f), viewportAspect, 0.1f, 1500.0f);
 
-	filterFBO->reshape(width, height);
+	FBOOrigin->reshape(width, height);
+	FBOFiltered->reshape(width, height);
 }
 
 void InitCallbackFuncs() 
@@ -213,15 +241,20 @@ void InitObjects()
 	cam = new Camera(vec3(0.0f, 15.0f, 20.0f), vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 	// setup program
-	programTexture = new Program("vs.vs.glsl", "fs.fs.glsl");
+	programTexture = new Program("model.vs.glsl", "textured.fs.glsl");
 	//programLight = new Program("vs.vs.glsl", "light.fs.glsl");
 	//programNormal = new Program("vs.vs.glsl", "normal.fs.glsl");
 	program = programTexture;
 
-	// Filter
-	filterProgram = new Program("window.vs.glsl", "sinWave.fs2.glsl");
-	filterFBO = new FBO();
+	// post processing
 	winModel = new WindowModel();
+
+	//// Filter
+	programFilter = new Program("window.vs.glsl", "sinWave.fs2.glsl");
+	FBOOrigin = new FBO();
+	//// Comparison
+	programComparison = new Program("window.vs.glsl", "comparison.fs3.glsl");
+	FBOFiltered = new FBO();
 
 
 	// load models
