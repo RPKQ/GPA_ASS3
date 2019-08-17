@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "FBO.h"
 #include "WindowModel.h"
+#include "ComparisonBar.h"
 #include "../Source/GLIncludes.h"
 
 using namespace glm;
@@ -30,11 +31,15 @@ WindowModel *winModel, *winModel2;
 Program *programFilter, *programComparison;
 FBO *FBOOrigin, *FBOFiltered;
 
+// comparisonBar
+ComparisonBar *comparisonBar;
+
 // assimp models
 AssimpModel* model;
 AssimpModel* model_sponza;
 AssimpModel* model_lostEmpire;
 Camera* cam;
+
 
 // timer function??
 GLubyte timer_cnt = 0;
@@ -83,7 +88,7 @@ void DisplayFunc()
 	programComparison->use();
 	programComparison->setTexture("texOrigin", FBOOrigin->getOuputTex(), (GLint)1);
 	programComparison->setTexture("texFiltered", FBOFiltered->getOuputTex(), (GLint)0);
-	programComparison->setFloat("splitPoint", windowW / 2);
+	programComparison->setFloat("splitPoint", (float)comparisonBar->getSplitPos());
 	winModel->draw();
 
 	glutSwapBuffers();
@@ -125,7 +130,12 @@ void MotionFunc(int moveX, int moveY)
 void MouseFunc(int button, int state, int x, int y) {
 	if (state == GLUT_UP) 
 	{
-		cam->endOfRotate();
+		if(button == GLUT_LEFT_BUTTON) cam->endOfRotate();
+	}
+	else if (state == GLUT_DOWN)
+	{
+		if (button == GLUT_LEFT_BUTTON) cam->startOfRotate();
+		else if (button == GLUT_MIDDLE_BUTTON) comparisonBar->setSplitPos(x);
 	}
 }
 
@@ -147,6 +157,7 @@ void ReshapeFunc(int width, int height)
 
 	FBOOrigin->reshape(width, height);
 	FBOFiltered->reshape(width, height);
+	comparisonBar->reshape(width);
 
 	windowH = height;
 	windowW = width;
@@ -238,19 +249,19 @@ void InitObjects()
 
 	// setup program
 	programTexture = new Program("Shaders/model.vs.glsl", "Shaders/textured.fs.glsl");
-	//programLight = new Program("vs.vs.glsl", "light.fs.glsl");
-	//programNormal = new Program("vs.vs.glsl", "normal.fs.glsl");
+	//programLight = new Program("Shaders/vs.vs.glsl", "Shaders/light.fs.glsl");
+	//programNormal = new Program("Shaders/vs.vs.glsl", "Shaders/normal.fs.glsl");
 	program = programTexture;
 
 	// post processing
 	winModel = new WindowModel();
-
 	//// Filter
 	programFilter = new Program("Shaders/window.vs.glsl", "Shaders/sinWave.fs2.glsl");
 	FBOOrigin = new FBO();
 	//// Comparison
 	programComparison = new Program("Shaders/window.vs.glsl", "Shaders/comparison.fs3.glsl");
 	FBOFiltered = new FBO();
+	comparisonBar = new ComparisonBar(windowW/2);
 
 
 	// load models

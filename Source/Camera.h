@@ -15,6 +15,7 @@ public:
 	void moveLocal(Direction direct);
 	void rotateWithMouse(int mouse_x, int mouse_y);
 	void endOfRotate();
+	void startOfRotate();
 	void setMoveSpeed(float speedFactor);
 
 	glm::vec3 getLookDir();
@@ -31,6 +32,7 @@ private:
 	glm::vec3 upDir;
 	float rotateSpeedFactor = 0.001f;
 	float moveSpeedFactor = 5.0f;
+	bool rotating;
 	struct {
 		int x = MOUSE_START_POS, y = MOUSE_START_POS;
 	} lastMouse;
