@@ -1,7 +1,8 @@
 #include "Program.h"
 #include "AssimpModel.h"
 #include "Camera.h"
-#include "Filter.h"
+#include "FBO.h"
+#include "WindowModel.h"
 #include "../Source/GLIncludes.h"
 
 using namespace glm;
@@ -23,7 +24,8 @@ Program* programLight;
 Program* program;
 
 Program* filterProgram;
-Filter* filterFBO;
+FBO* filterFBO;
+WindowModel* winModel;
 
 AssimpModel* model;
 AssimpModel* model_sponza;
@@ -61,7 +63,9 @@ void DisplayFunc()
 	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 
 	filterProgram->use();
-	filterFBO->draw();
+	filterProgram->setFloat("time", glutGet(GLUT_ELAPSED_TIME));
+	filterProgram->setTexture("tex", filterFBO->getOuputTex(), 1);
+	winModel->draw();
 
 	glutSwapBuffers();
 }
@@ -215,8 +219,9 @@ void InitObjects()
 	program = programTexture;
 
 	// Filter
-	filterProgram = new Program("window.vs.glsl", "inverse.fs2.glsl");
-	filterFBO = new Filter();
+	filterProgram = new Program("window.vs.glsl", "sinWave.fs2.glsl");
+	filterFBO = new FBO();
+	winModel = new WindowModel();
 
 
 	// load models
