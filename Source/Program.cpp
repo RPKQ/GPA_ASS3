@@ -53,9 +53,10 @@ GLuint Program::getID() const
 	return this->ID;
 }
 
-void Program::setTexture(const std::string &name, GLuint textureID, int bindingPoint)
+void Program::setTexture(const std::string &name, GLuint textureID, GLint bindingPoint)
 {
-	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)bindingPoint);
+	GLuint loc = glGetUniformLocation(ID, name.c_str());
+	glUniform1i(loc, bindingPoint);
 	glActiveTexture(GL_TEXTURE0 + bindingPoint);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 }
