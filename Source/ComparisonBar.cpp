@@ -1,8 +1,7 @@
 #include "ComparisonBar.h"
 
-ComparisonBar::ComparisonBar(int initPos)
+ComparisonBar::ComparisonBar()
 {
-	this->splitPos = (float)initPos;
 }
 
 ComparisonBar::~ComparisonBar()
@@ -21,6 +20,12 @@ void ComparisonBar::setSplitPos(int val)
 
 void ComparisonBar::reshape(int width)
 {
+	if (this->widthOrigin == 0)
+	{
+		this->widthOrigin = (float)width;
+		this->splitPos = (float)width / 2;
+		return;
+	}
 	this->splitPos = this->splitPos / widthOrigin * (float)width;
 	widthOrigin = (float)width;
 }

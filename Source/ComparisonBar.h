@@ -5,7 +5,7 @@
 class ComparisonBar
 {
 public:
-	ComparisonBar(int initPos);
+	ComparisonBar();
 	~ComparisonBar();
 	void reshape(int width);
 	float getSplitPos() const;
@@ -13,7 +13,7 @@ public:
 
 private:
 	float splitPos;
-	float widthOrigin;
+	float widthOrigin = 0;
 };
 #endif
 

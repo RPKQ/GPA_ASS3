@@ -13,7 +13,6 @@ enum { MENU_TIMER_START, MENU_TIMER_STOP, MENU_EXIT,
 	MENU_SHADER_LAPLACIAN, MENU_SHADER_REDBLUE, MENU_SHADER_SINWAVE,
 	MENU_SCENE_SPONZA, MENU_SCENE_EMPIRE};
 
-
 int windowW = 1024, windowH = 768;
 
 // matrices
@@ -28,20 +27,20 @@ WindowModel *winModel, *winModel2;
 Program *programFilter, *programComparison;
 FBO *FBOOrigin, *FBOFiltered;
 
-// comparisonBar
-ComparisonBar *comparisonBar;
-
 // assimp models
 AssimpModel* model;
 AssimpModel* model_sponza;
 AssimpModel* model_lostEmpire;
-Camera* cam;
 
+// Others
+ComparisonBar *comparisonBar;
+Camera* cam;
 
 // timer function??
 GLubyte timer_cnt = 0;
 bool timer_enabled = true;
 unsigned int timer_speed = 16;
+
 
 void DisplayFunc()
 {
@@ -73,6 +72,8 @@ void DisplayFunc()
 
 	programFilter->use();
 	programFilter->setFloat("time", glutGet(GLUT_ELAPSED_TIME));
+	programFilter->setFloat("windowW", (float)windowW);
+	programFilter->setFloat("windowH", (float)windowH);
 	programFilter->setTexture("tex", FBOOrigin->getOuputTex(), (GLint)1);
 	winModel->draw();
 
@@ -132,7 +133,7 @@ void MouseFunc(int button, int state, int x, int y) {
 	else if (state == GLUT_DOWN)
 	{
 		if (button == GLUT_LEFT_BUTTON) cam->startOfRotate();
-		else if (button == GLUT_MIDDLE_BUTTON) comparisonBar->setSplitPos(x);
+		else if (button == GLUT_MIDDLE_BUTTON) comparisonBar->setSplitPos((float)x);
 	}
 }
 
@@ -247,12 +248,12 @@ void InitObjects()
 	// post processing
 	winModel = new WindowModel();
 	//// Filter
-	programFilter = new Program("Shaders/window.vs.glsl", "Shaders/sinWave.fs2.glsl");
+	programFilter = new Program("Shaders/window.vs.glsl", "Shaders/redBlue.fs2.glsl");
 	FBOOrigin = new FBO();
 	//// Comparison
 	programComparison = new Program("Shaders/window.vs.glsl", "Shaders/comparison.fs3.glsl");
 	FBOFiltered = new FBO();
-	comparisonBar = new ComparisonBar(windowW/2);
+	comparisonBar = new ComparisonBar();
 
 
 	// load models
