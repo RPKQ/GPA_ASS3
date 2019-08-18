@@ -57,7 +57,7 @@ void main()
 	vec4 colorDOG = vec4(edge, edge, edge, 1.0 );
 
 	// final
-	fragColor = colorDOG * color;
+	fragColor = mix(vec4(0.0, 0.0, 0.0, 1.0), color, colorDOG);
 
 
 }
