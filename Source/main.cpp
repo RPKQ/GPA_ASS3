@@ -13,9 +13,9 @@ enum { MENU_TIMER_START, MENU_TIMER_STOP, MENU_EXIT,
 	MENU_SHADER_LAPLACIAN, MENU_SHADER_REDBLUE, MENU_SHADER_SINWAVE,
 	MENU_SCENE_SPONZA, MENU_SCENE_EMPIRE};
 
+// uniforms
 int windowW = 1024, windowH = 768;
-
-// matrices
+float magCenterX = 200.0f, magCenterY = 500.0f;
 glm::mat4 modelMat;
 glm::mat4 perspectMat;
 
@@ -74,6 +74,7 @@ void DisplayFunc()
 	programFilter->setFloat("time", glutGet(GLUT_ELAPSED_TIME));
 	programFilter->setFloat("windowW", (float)windowW);
 	programFilter->setFloat("windowH", (float)windowH);
+	programFilter->setVec2("center", (float)magCenterX, (float)(windowH - magCenterY));
 	programFilter->setTexture("tex", FBOOrigin->getOuputTex(), (GLint)1);
 	winModel->draw();
 
@@ -115,14 +116,18 @@ void KeyboardFunc(unsigned char key, int x, int y)
 	case 'x':
 		cam->moveLocal(Camera::DOWN);
 		break;
+	case 'm':
+		magCenterX = (float)x;
+		magCenterY = (float)y;
+		break;
 	default:
 		break;
 	}
 }
 
-void MotionFunc(int moveX, int moveY)
+void MotionFunc(int x, int y)
 {
-	cam->rotateWithMouse(moveX, moveY);
+	cam->rotateWithMouse(x, y);
 }
 
 void MouseFunc(int button, int state, int x, int y) {
@@ -248,7 +253,7 @@ void InitObjects()
 	// post processing
 	winModel = new WindowModel();
 	//// Filter
-	programFilter = new Program("Shaders/window.vs.glsl", "Shaders/redBlue.fs2.glsl");
+	programFilter = new Program("Shaders/window.vs.glsl", "Shaders/magnifier.fs2.glsl");
 	FBOOrigin = new FBO();
 	//// Comparison
 	programComparison = new Program("Shaders/window.vs.glsl", "Shaders/comparison.fs3.glsl");
