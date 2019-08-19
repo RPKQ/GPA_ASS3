@@ -305,7 +305,7 @@ void InitObjects()
 
 
 	// load models
-	//model_sponza = new AssimpModel("Models/sponza.obj");
+	model_sponza = new AssimpModel("Models/sponza.obj");
 	model_lostEmpire = new AssimpModel("Models/lost_empire.obj");
 
 	programFilter = laplacian;
