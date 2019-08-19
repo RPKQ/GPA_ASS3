@@ -11,25 +11,36 @@ uniform sampler2D tex;
 
 void main()
 {
-	const float weight = 0.09f;
-	const float offScale = 0.002f;
-	const vec2 offsets[9] =
-	{
-		vec2(-offScale, -offScale), vec2(0, -offScale), vec2(offScale, -offScale),
-		vec2(-offScale, 0), vec2(0, 0), vec2(offScale, 0),
-		vec2(-offScale, offScale), vec2(0, offScale), vec2(offScale, offScale)
-	};
 
-	const float mFilter[9] = 
-	{
-		1.0f, 2.0f, 1.0f,
-		2.0f, 4.0, 2.0,
-		1.0f, 2.0f, 1.0f
-	};
+	// original >> color
+	vec4 color = texture(tex, vertexData.texCoord);
 
-    vec4 sum = vec4(0.0f);
-    for(int i=0; i<9; i++)
-		sum += texture(tex, vertexData.texCoord + offsets[i]) * mFilter[i];
-	fragColor = sum * weight;
+	// blur 1 >> color1
+	int half_size = 2;
+	int texScale = 2;
+	vec4 color_sum = vec4(0);
+	for (int i = -half_size; i <= half_size ; ++i) {
+		for (int j = -half_size; j <= half_size ; ++j) {
+			ivec2 coord = ivec2(gl_FragCoord.xy) + ivec2(i * texScale, j * texScale);
+			color_sum += texelFetch(tex, coord, 0); 
+		} 
+	} 
+	int sample_count = (half_size * 2 + 1) * (half_size * 2 + 1);
+	vec4 color1 = color_sum / sample_count;
+
+	// blur 2 >> color2
+	texScale = 3;
+	color_sum = vec4(0);
+	for (int i = -half_size; i <= half_size ; ++i) {
+		for (int j = -half_size; j <= half_size ; ++j) {
+			ivec2 coord = ivec2(gl_FragCoord.xy) + ivec2(i * texScale, j * texScale);
+			color_sum += texelFetch(tex, coord, 0); 
+		} 
+	} 
+	sample_count = (half_size * 2 + 1) * (half_size * 2 + 1);
+	vec4 color2 = color_sum / sample_count;
+
+	// final
+	fragColor= color * 0.3 + color1 * 0.5 + color2 * 0.4;
 
 }
