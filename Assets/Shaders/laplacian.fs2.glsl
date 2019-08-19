@@ -11,7 +11,7 @@ uniform sampler2D tex;
 
 void main()
 {
-    const float threshold = 0.9f;
+    const float threshold = 0.85f;
 	const float offScale = 0.002f;
 	const vec2 offsets[9] =
 	{
