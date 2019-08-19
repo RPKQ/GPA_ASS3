@@ -11,6 +11,8 @@ using namespace std;
 
 enum { MENU_TIMER_START, MENU_TIMER_STOP, MENU_EXIT, 
 	MENU_SHADER_LAPLACIAN, MENU_SHADER_REDBLUE, MENU_SHADER_SINWAVE,
+	MENU_SHADER_MAGNIFIER, MENU_SHADER_BLOOMING, MENU_SHADER_BLURQUANDOG,
+	MENU_SHADER_WHIRL, MENU_SHADER_FROSTED, MENU_SHADER_CROSSHATCH,
 	MENU_SCENE_SPONZA, MENU_SCENE_EMPIRE};
 
 // uniforms
@@ -26,6 +28,10 @@ Program* programOrigin;
 WindowModel *winModel, *winModel2;
 Program *programFilter, *programComparison;
 FBO *FBOOrigin, *FBOFiltered;
+
+Program *redBlue, *sinWave, *laplacian;
+Program *magnifier, *blooming, *blurQuanDOG;
+Program *whirl, *frosted, *crossHatch;
 
 // assimp models
 AssimpModel* model;
@@ -202,10 +208,31 @@ void MenuFunc(int id)
 		cam->setMoveSpeed(1.0);
 		break;
 	case MENU_SHADER_LAPLACIAN:
+		programFilter = laplacian;
 		break;
 	case MENU_SHADER_REDBLUE:
+		programFilter = redBlue;
 		break;
 	case MENU_SHADER_SINWAVE:
+		programFilter = sinWave;
+		break;
+	case MENU_SHADER_MAGNIFIER:
+		programFilter = magnifier;
+		break;
+	case MENU_SHADER_BLOOMING:
+		programFilter = blooming;
+		break;
+	case MENU_SHADER_BLURQUANDOG:
+		programFilter = blurQuanDOG;
+		break;
+	case MENU_SHADER_FROSTED:
+		programFilter = frosted;
+		break;
+	case MENU_SHADER_WHIRL:
+		programFilter = whirl;
+		break;
+	case MENU_SHADER_CROSSHATCH:
+		programFilter = crossHatch;
 		break;
 	default:
 		break;
@@ -233,6 +260,12 @@ void InitMenu()
 	glutAddMenuEntry("laplacian", MENU_SHADER_LAPLACIAN);
 	glutAddMenuEntry("red-blue", MENU_SHADER_REDBLUE);
 	glutAddMenuEntry("sin wave", MENU_SHADER_SINWAVE);
+	glutAddMenuEntry("magnifier", MENU_SHADER_MAGNIFIER);
+	glutAddMenuEntry("blooming", MENU_SHADER_BLOOMING);
+	glutAddMenuEntry("abstraction", MENU_SHADER_BLURQUANDOG);
+	glutAddMenuEntry("frosted", MENU_SHADER_FROSTED);
+	glutAddMenuEntry("whirl", MENU_SHADER_WHIRL);
+	glutAddMenuEntry("cross-hatching", MENU_SHADER_CROSSHATCH);
 
 	glutSetMenu(menu_scene);
 	glutAddMenuEntry("lost empire", MENU_SCENE_EMPIRE);
@@ -253,7 +286,15 @@ void InitObjects()
 	// post processing
 	winModel = new WindowModel();
 	//// Filter
-	programFilter = new Program("Shaders/window.vs.glsl", "Shaders/magnifier.fs2.glsl");
+	redBlue = new Program("Shaders/window.vs.glsl", "Shaders/redBlue.fs2.glsl");
+	sinWave = new Program("Shaders/window.vs.glsl", "Shaders/sinWave.fs2.glsl");
+	laplacian = new Program("Shaders/window.vs.glsl", "Shaders/laplacian.fs2.glsl");
+	magnifier = new Program("Shaders/window.vs.glsl", "Shaders/magnifier.fs2.glsl");
+	blooming = new Program("Shaders/window.vs.glsl", "Shaders/blooming.fs2.glsl");
+	blurQuanDOG = new Program("Shaders/window.vs.glsl", "Shaders/blurQuanDOG.fs2.glsl");
+	whirl = new Program("Shaders/window.vs.glsl", "Shaders/whirl.fs2.glsl");
+	frosted = new Program("Shaders/window.vs.glsl", "Shaders/frosted.fs2.glsl");
+	crossHatch = new Program("Shaders/window.vs.glsl", "Shaders/crossHatch.fs2.glsl");
 	FBOOrigin = new FBO();
 	//// Comparison
 	programComparison = new Program("Shaders/window.vs.glsl", "Shaders/comparison.fs3.glsl");
@@ -262,8 +303,10 @@ void InitObjects()
 
 
 	// load models
-	//model_sponza = new AssimpModel("Models/sponza.obj");
+	model_sponza = new AssimpModel("Models/sponza.obj");
 	model_lostEmpire = new AssimpModel("Models/lost_empire.obj");
+
+	programFilter = redBlue;
 	model = model_lostEmpire;
 
 }
