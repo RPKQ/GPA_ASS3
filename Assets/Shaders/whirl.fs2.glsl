@@ -15,7 +15,7 @@ uniform vec2 center;
 void main (void)
 {
 	const float radius = 200.0;
-	const float scale = 10.0;
+	const float scale = 7.0;
 	vec2 texSize = vec2(windowW, windowH);
 	vec2 curPoint = vertexData.texCoord * texSize;
 	vec2 curVec = curPoint - center;
