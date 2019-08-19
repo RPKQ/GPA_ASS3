@@ -9,11 +9,14 @@ public:
 	~ComparisonBar();
 	void reshape(int width);
 	float getSplitPos() const;
-	void setSplitPos(int val);
+	void drag(int x);
+	void startDrag();
+	void endDrag();
 
 private:
 	float splitPos;
 	float widthOrigin = 0;
+	bool dragging = false;
 };
 #endif
 

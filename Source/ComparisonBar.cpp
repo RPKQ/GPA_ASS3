@@ -13,11 +13,6 @@ float ComparisonBar::getSplitPos() const
 	return this->splitPos;
 }
 
-void ComparisonBar::setSplitPos(int val)
-{
-	this->splitPos = (float)val;
-}
-
 void ComparisonBar::reshape(int width)
 {
 	if (this->widthOrigin == 0)
@@ -28,4 +23,19 @@ void ComparisonBar::reshape(int width)
 	}
 	this->splitPos = this->splitPos / widthOrigin * (float)width;
 	widthOrigin = (float)width;
+}
+
+void ComparisonBar::drag(int x)
+{
+	if (this->dragging) this->splitPos = (float)x;
+}	
+
+void ComparisonBar::startDrag()
+{
+	this->dragging = true;
+}
+
+void ComparisonBar::endDrag()
+{
+	this->dragging = false;
 }

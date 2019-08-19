@@ -133,6 +133,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 
 void MotionFunc(int x, int y)
 {
+	comparisonBar->drag(x);
 	cam->rotateWithMouse(x, y);
 }
 
@@ -140,11 +141,12 @@ void MouseFunc(int button, int state, int x, int y) {
 	if (state == GLUT_UP) 
 	{
 		if(button == GLUT_LEFT_BUTTON) cam->endOfRotate();
+		else if (button == GLUT_MIDDLE_BUTTON) comparisonBar->endDrag();
 	}
 	else if (state == GLUT_DOWN)
 	{
 		if (button == GLUT_LEFT_BUTTON) cam->startOfRotate();
-		else if (button == GLUT_MIDDLE_BUTTON) comparisonBar->setSplitPos((float)x);
+		else if (button == GLUT_MIDDLE_BUTTON) comparisonBar->startDrag();
 	}
 }
 
@@ -303,10 +305,10 @@ void InitObjects()
 
 
 	// load models
-	model_sponza = new AssimpModel("Models/sponza.obj");
+	//model_sponza = new AssimpModel("Models/sponza.obj");
 	model_lostEmpire = new AssimpModel("Models/lost_empire.obj");
 
-	programFilter = redBlue;
+	programFilter = laplacian;
 	model = model_lostEmpire;
 
 }
