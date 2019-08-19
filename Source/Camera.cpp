@@ -47,7 +47,7 @@ void Camera::moveLocal(Camera::Direction direct)
 
 void Camera::rotateWithMouse(int mouse_x, int mouse_y)
 {
-	if (!rotating) return;
+	if (!this->rotating) return;
 
 	if (this->lastMouse.x == MOUSE_START_POS && this->lastMouse.y == MOUSE_START_POS)
 	{

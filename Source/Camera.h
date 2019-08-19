@@ -31,7 +31,7 @@ private:
 	glm::vec3 lookPos;
 	glm::vec3 upDir;
 	float rotateSpeedFactor = 0.001f;
-	float moveSpeedFactor = 5.0f;
+	float moveSpeedFactor = 1.0f;
 	bool rotating;
 	struct {
 		int x = MOUSE_START_POS, y = MOUSE_START_POS;
